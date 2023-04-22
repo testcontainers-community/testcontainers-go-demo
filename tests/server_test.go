@@ -45,6 +45,22 @@ func setupWithDockerFile(user, password, dbname string, ctx context.Context) (te
 		return nil, err
 	}
 
+	// Get the container's host and port
+	cHost, err := customContainer.Host(ctx)
+	if err != nil {
+		return nil, err
+	}
+	//obtaining the externally mapped port for the container
+	cPort, err := customContainer.MappedPort(ctx, "3306")
+	if err != nil {
+		return nil, err
+	}
+
+	//establish connection to MariaDB database container
+	if err := database.Connect(user, password,cHost, cPort.Port(), dbname); err != nil {
+		return nil, err
+	}
+
 	return customContainer, nil
 }
 
@@ -55,24 +71,11 @@ func TestB(t *testing.T) {
 	ctx := context.Background()
 	log.Println(ctx)
 
-	customContainer, err := setupWithDockerFile(user, password, dbname, ctx)
-
-	// Get the container's host and port
-	cHost, err := customContainer.Host(ctx)
+	_, err := setupWithDockerFile(user, password, dbname, ctx)
+	//Stop tests if any errors encountered when setting up database connection
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	//obtaining the externally mapped port for the container
-	cPort, err := customContainer.MappedPort(ctx, "3306")
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	//establish connection to MariaDB database container
-	if err := database.Connect(user, password,cHost, cPort.Port(), dbname); err != nil {
-		t.Fatal(err.Error())
-	}
-
 	//starting aAPI server to listen on port 9000
 	router := server.SetupRouter()
 
