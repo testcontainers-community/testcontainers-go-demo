@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"studentAPI/database"
@@ -65,18 +64,16 @@ func setupWithDockerFile(user, password, dbname string, ctx context.Context) (te
 }
 
 func TestB(t *testing.T) {
-	user    := "theuser"
-	password := "thepass"
-	dbname   := "thedb"
-	ctx := context.Background()
-	log.Println(ctx)
 
-	_, err := setupWithDockerFile(user, password, dbname, ctx)
+	ctx := context.Background()
+	//Setting up database container using custom Dockerfile
+	_, err := setupWithDockerFile("theuser", "thepass", "thedb", ctx)
+
 	//Stop tests if any errors encountered when setting up database connection
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	//starting aAPI server to listen on port 9000
+	//setting up API Server Router
 	router := server.SetupRouter()
 
 	//Testing a POST HTTP request to /students
