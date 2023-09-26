@@ -1,4 +1,4 @@
-package tests
+package main
 
 import (
 	"context"
@@ -10,31 +10,27 @@ import (
 	"studentAPI/database"
 	"testing"
 )
-const (
-	user     = "theuser"
-	password = "thepass"
-	dbname   = "thedb"
-)
 
-//Declaration of global variables
+// Declaration of global variables
 var (
 	mariadbContainer testcontainers.Container
-	mariadbHost string
-	mariadbPort nat.Port
-	ctx = context.Background()
+	mariadbHost      string
+	mariadbPort      nat.Port
+	ctx              = context.Background()
 )
 
 func setupContainer() error {
 	// Defining parameters for MariaDB container
 	req := testcontainers.ContainerRequest{
-		Image: "mariadb:10.6",      		//mariadb version version
+		Image:        "mariadb:10.6",       //mariadb version version
 		ExposedPorts: []string{"3306/tcp"}, //container port to expose
-		Env: map[string]string{ 			//Values for container environmental variables
+		Env: map[string]string{ //Values for container environmental variables
 			"MARIADB_ROOT_PASSWORD": password,
 			"MARIADB_USER":          user,
 			"MARIADB_PASSWORD":      password,
 			"MARIADB_DATABASE":      dbname,
 		},
+		SkipReaper: true,
 		//Checking Mariadb port for this string, to indicate container is fully up and running
 		WaitingFor: wait.ForListeningPort("3306/tcp"),
 	}
@@ -62,10 +58,11 @@ func setupContainer() error {
 	}
 	return nil
 }
+
 // Perform database migration
 func setupDBConnection() error {
 	//establish connection to MariaDB database container
-	err := database.Connect(user, password,mariadbHost, mariadbPort.Port(), dbname)
+	err := database.Connect(user, password, mariadbHost, mariadbPort.Port(), dbname)
 	if err != nil {
 		return err
 	}
@@ -75,9 +72,12 @@ func setupDBConnection() error {
 	return nil
 }
 
-//This contains setup and teardown code gets called before all test functions.
+// This contains setup and teardown code gets called before all test functions.
 func TestMain(m *testing.M) {
 	//Set up container
+
+	log.Println("herererere")
+
 	if err := setupContainer(); err != nil {
 		log.Fatal(err.Error())
 	}

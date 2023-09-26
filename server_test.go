@@ -1,4 +1,4 @@
-package tests
+package main
 
 import (
 	"bytes"
@@ -19,11 +19,11 @@ import (
 func setupWithDockerFile(user, password, dbname string, ctx context.Context) (testcontainers.Container, error) {
 	req := testcontainers.ContainerRequest{
 		FromDockerfile: testcontainers.FromDockerfile{
-			Context: "./custom",
+			Context:    "./testdata",
 			Dockerfile: "Dockerfile",
 		},
 		ExposedPorts: []string{"3306/tcp"}, //container port to expose
-		Env: map[string]string{ 			//Values for container environmental variables
+		Env: map[string]string{ //Values for container environmental variables
 			"MARIADB_ROOT_PASSWORD": password,
 			"MARIADB_USER":          user,
 			"MARIADB_PASSWORD":      password,
@@ -56,7 +56,7 @@ func setupWithDockerFile(user, password, dbname string, ctx context.Context) (te
 	}
 
 	//establish connection to MariaDB database container
-	if err := database.Connect(user, password,cHost, cPort.Port(), dbname); err != nil {
+	if err := database.Connect(user, password, cHost, cPort.Port(), dbname); err != nil {
 		return nil, err
 	}
 
@@ -64,6 +64,11 @@ func setupWithDockerFile(user, password, dbname string, ctx context.Context) (te
 }
 
 func TestB(t *testing.T) {
+	user := "theuser"
+	password := "thepass"
+	dbname := "thedb"
+	ctx := context.Background()
+	log.Println(ctx)
 
 	ctx := context.Background()
 	//Setting up database container using custom Dockerfile
@@ -127,10 +132,10 @@ func TestB(t *testing.T) {
 		assert.Equal(t, 200, w.Code)
 
 		//Composing the expected response data
-		expected:= server.Response{
+		expected := server.Response{
 			Success: true,
 			Message: "",
-			Data:    database.Student{
+			Data: database.Student{
 				ID:          5,
 				Fname:       "Theda",
 				Lname:       "Brockton",
@@ -151,5 +156,3 @@ func TestB(t *testing.T) {
 		t.Logf("Successfully retrieved with response: %s \n", w.Body.String())
 	})
 }
-
-
