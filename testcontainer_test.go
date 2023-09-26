@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/testcontainers/testcontainers-go/modules/mariadb"
 	"log"
 	"os"
 	"studentAPI/database"
@@ -21,27 +21,14 @@ var (
 
 func setupContainer() error {
 	// Defining parameters for MariaDB container
-	req := testcontainers.ContainerRequest{
-		Image:        "mariadb:10.6",       //mariadb version version
-		ExposedPorts: []string{"3306/tcp"}, //container port to expose
-		Env: map[string]string{ //Values for container environmental variables
-			"MARIADB_ROOT_PASSWORD": password,
-			"MARIADB_USER":          user,
-			"MARIADB_PASSWORD":      password,
-			"MARIADB_DATABASE":      dbname,
-		},
-		SkipReaper: true,
-		//Checking Mariadb port for this string, to indicate container is fully up and running
-		WaitingFor: wait.ForListeningPort("3306/tcp"),
-	}
-
-	//Starting the MariaDB Container
 	var err error
-	mariadbContainer, err = testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
-	//Stop tests if any errors encountered when setting up database connection
+	mariadbContainer, err = mariadb.RunContainer(ctx,
+		testcontainers.WithImage("mariadb:10.6"),
+		mariadb.WithDatabase(dbname),
+		mariadb.WithUsername(user),
+		mariadb.WithPassword(password),
+	)
+
 	if err != nil {
 		return err
 	}
@@ -75,9 +62,6 @@ func setupDBConnection() error {
 // This contains setup and teardown code gets called before all test functions.
 func TestMain(m *testing.M) {
 	//Set up container
-
-	log.Println("herererere")
-
 	if err := setupContainer(); err != nil {
 		log.Fatal(err.Error())
 	}

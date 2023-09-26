@@ -68,11 +68,9 @@ func TestB(t *testing.T) {
 	password := "thepass"
 	dbname := "thedb"
 	ctx := context.Background()
-	log.Println(ctx)
 
-	ctx := context.Background()
 	//Setting up database container using custom Dockerfile
-	_, err := setupWithDockerFile("theuser", "thepass", "thedb", ctx)
+	_, err := setupWithDockerFile(user, password, dbname, ctx)
 
 	//Stop tests if any errors encountered when setting up database connection
 	if err != nil {
