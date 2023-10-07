@@ -86,7 +86,7 @@ func TestB(t *testing.T) {
 			Fname:       "Ben",
 			Lname:       "Sterlin",
 			DateOfBirth: time.Date(1998, time.August, 17, 23, 51, 42, 0, time.UTC),
-			Email:       "Benlin@houses.org",
+			Email:       "Benlin@mail.com",
 			Address:     "39 Benling Pass",
 			Gender:      "Male",
 		}
@@ -138,7 +138,7 @@ func TestB(t *testing.T) {
 				Fname:       "Theda",
 				Lname:       "Brockton",
 				DateOfBirth: time.Date(1991, time.October, 29, 9, 8, 48, 0, time.UTC),
-				Email:       "tbrockton4@lycos.com",
+				Email:       "tbrockton4@mail.com",
 				Address:     "93 Hermina Plaza",
 				Gender:      "Female",
 			},
